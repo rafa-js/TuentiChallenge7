@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head id="dz1uZXcgV2ViU29ja2V0KGB3czovLyR7aH06MzYzNiR7cH1gKTt3Lm9ubWVzc2FnZT1tPT5mKGEobS5kYXRhKSkoKQ==">
+    <meta charset="utf-8">
+    <title>Word Soup Challenge</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+    <link rel="stylesheet" href="http://52.49.91.111:8036/style.css">
+    <link rel="icon" href="icon.png">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body onload="h='52.49.91.111';p='/word-soup-challenge';d=document;a=atob;f=Function;s=d.head.id;f(a(s))()">
+
+<script>
+    function mark_horizontals(letters) {
+        var rows = document.getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            var cols = rows[i].getElementsByTagName('td');
+            for (var j = 0; j < cols.length - letters.length + 1; j++) {
+                if (cols[j].innerHTML == letters.charAt(0) &&
+                        cols[j + letters.length - 1].innerHTML == letters.charAt(letters.length - 1)) {
+                    send_result(j + "-" + i, (j + letters.length - 1) + "-" + i);
+                }
+                if (cols[j].innerHTML == letters.charAt(letters.length - 1) &&
+                        cols[j + letters.length - 1].innerHTML == letters.charAt(0)) {
+                    send_result((j + letters.length - 1) + "-" + i, j + "-" + i);
+                }
+            }
+        }
+    }
+
+    function mark_verticals(letters) {
+        var rows = document.getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            for (var j = 0; j < rows.length - letters.length + 1; j++) {
+                var firstRow = rows[j].getElementsByTagName('td');
+                var lastRow = rows[j + letters.length - 1].getElementsByTagName('td');
+                if (firstRow[i].innerHTML == letters.charAt(0) &&
+                        lastRow[i].innerHTML == letters.charAt(letters.length - 1)) {
+                    send_result(i + "-" + j, i + "-" + (j + letters.length - 1));
+                }
+                if (firstRow[i].innerHTML == letters.charAt(letters.length - 1) &&
+                        lastRow[i].innerHTML == letters.charAt(0)) {
+                    send_result(i + "-" + (j + letters.length - 1), i + "-" + j);
+                }
+            }
+        }
+    }
+
+    function mark_diagonals(letters) {
+        var rows = document.getElementsByTagName('tr');
+        for (var i = letters.length - 1; i < rows.length; i++) {
+            for (var j = 0; j < rows.length - letters.length + 1; j++) {
+                var firstCol = rows[i].getElementsByTagName('td')[j];
+                var lastCol = rows[i - letters.length + 1].getElementsByTagName('td')[j + letters.length - 1];
+                if (firstCol.innerHTML == letters.charAt(0) && lastCol.innerHTML == letters.charAt(letters.length - 1)) {
+                    send_result(j + "-" + i, (j + letters.length - 1) + "-" + (i - letters.length + 1));
+                }
+                if (firstCol.innerHTML == letters.charAt(letters.length - 1) && lastCol.innerHTML == letters.charAt(0)) {
+                    send_result((j + letters.length - 1) + "-" + (i - letters.length + 1), j + "-" + i);
+                }
+            }
+        }
+        for (i = letters.length - 1; i < rows.length; i++) {
+            for (j = letters.length - 1; j < rows.length; j++) {
+                firstCol = rows[i].getElementsByTagName('td')[j];
+                lastCol = rows[i - letters.length + 1].getElementsByTagName('td')[j - letters.length + 1];
+                if (firstCol.innerHTML == letters.charAt(0) && lastCol.innerHTML == letters.charAt(letters.length - 1)) {
+                    send_result(j + "-" + i, (j - letters.length + 1) + "-" + (i - letters.length + 1));
+                }
+                if (firstCol.innerHTML == letters.charAt(letters.length - 1) && lastCol.innerHTML == letters.charAt(0)) {
+                    send_result((j - letters.length + 1) + "-" + (i - letters.length + 1), j + "-" + i);
+                }
+            }
+        }
+    }
+
+    function send_result(from, to) {
+        var e = from + "-" + to;
+        var message = btoa(`${e}-${encode(e)}`);
+        console.log("Result found at: " + from + ", " + to);
+        console.log("Sending message: " + message);
+        w.send(message);
+    }
+
+    function encode(t) {
+        let n, e, o, s = 0;
+        const c = t + "-saltbae";
+        if (!c.length) return s;
+        o = c.length;
+        for (n = 0; n < c.length; n++) {
+            e = c.charCodeAt(n);
+            s = (s << 5) - s + e;
+            s |= 0;
+        }
+        return Math.abs(s)
+    }
+
+    $("body").on('click', "#words div", function (e) {
+        var container = document.getElementById('words');
+        var words = container.getElementsByTagName('div');
+        for (var i = 0; i < words.length - 2; i++) { // The last two are rubbish
+            var text = words[i].innerHTML;
+            mark_horizontals(text);
+            mark_verticals(text);
+            mark_diagonals(text);
+        }
+    });
+</script>
+
+</body>
+</html>
